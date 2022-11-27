@@ -1,5 +1,6 @@
 package com.rafaella.daywater
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +13,6 @@ import com.rafaella.daywater.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
 
         waterManager = WaterManager(this)
         initListener()
+
+        deletarDados()
 
         binding.diminui.setOnClickListener{
             val qtd = binding.qtdCopos.text.toString().toInt()
@@ -73,12 +75,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun deletarDados(){
         val dataHoraAtual = Date()
         val hora = SimpleDateFormat("HH:mm:ss").format(dataHoraAtual)
-        val data = SimpleDateFormat("dd/MM/yyyy").format(dataHoraAtual)
         Log.e("TAG", hora)
-        if(hora == "24:00:00"){
+        if(hora == "00:00:00"){
             lifecycleScope.launch{
                 waterManager.deleteData()
                 binding.qtdCopos.text = "0"
@@ -98,6 +100,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        deletarDados()
+    }
 
+    override fun onRestart() {
+        super.onRestart()
+        deletarDados()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        super.onStart()
     }
 }
